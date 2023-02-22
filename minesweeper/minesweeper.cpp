@@ -79,10 +79,20 @@ int main() {
             }
         }
 
+        for (row = 0; row < size; row++) {
+            //printf("ROW: %d\n", row);
+            for (col = 0; col < size; col++) {
+                printf("%d ", grid[row][col]);
+                if (col == size - 1) {
+                    printf("\n");
+                }
+            }
+        }
+
         int inputR, inputC;
         bool valide = false;
         while (!valide) {
-            printf("\nEntrez les coordonees de la case ainsi: Ligne Colone\nex: 1 0\n");
+            printf("\nEntrez les coordonees de la case ainsi: Ligne Colone\nex: 1 3\n");
             scanf_s("%d %d", &inputR, &inputC);
             // Check si la case est valide
             if ((inputC <= size && inputC > 0) && (inputR <= size && inputR > 0)) {
@@ -100,14 +110,32 @@ int main() {
                 display[inputR][inputC] = 'X';
                 lost = true;
             }
+            else{
+                printf("\nCounting\n");
+                int count = 0;
+                //compter le nombre de mines autour
+                int R, C;
+                for(R = -2; R <1; R++) {
+                    for(C = -2; C <1 ; C++)
+                    {
+                        if (grid[inputR+R][inputC+C]==1) {
+                            count++;
+                        }
+                    }
+                }
+                printf("\nNearby: %d\n", count);
+                // display le nombre
+                //convertir int en string
+                char nearby = count + '0';
+                display[inputR-1][inputC-1] = nearby;
+            }
         }
         
         //CHECK FOR MINES
-        if (grid[inputR][inputC] == 1) {
+        if (grid[inputR-1][inputC-1] == 1) {
             lost = true;
             printf("Perdu !");
         }
-        lost = true;
     }
     return 0;
 }
