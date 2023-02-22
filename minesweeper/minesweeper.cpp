@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+
 
 int main() {
     bool lost = false;
@@ -13,11 +15,18 @@ int main() {
     /* initialisation de la grid */
     printf("\nSize: %dx%d",size, size);
     int grid[size][size];
-    /*Counter variables for the loop*/
+    char display[size][size];
+
     int row, col;
     for (row = 0; row < size; row++) {
         for (col = 0; col < size; col++) {
             grid[row][col] = 0;
+        }
+    }
+    // grid à afficher
+    for (row = 0; row < size; row++) {
+        for (col = 0; col < size; col++) {
+            display[row][col] = '?' ;
         }
     }
     
@@ -26,6 +35,7 @@ int main() {
     scanf_s("$d", &difficulty);
     printf("Difficulty: %d", difficulty);*/
     int toPlace;
+    //change number of mines depending on difficulty
     switch (difficulty)
     {
     case 0:
@@ -35,7 +45,7 @@ int main() {
     }
 
 
-
+    srand(time(NULL));
     int placed;
     printf(" Mines: %d\n", toPlace);
     //Randomly place mines
@@ -62,17 +72,35 @@ int main() {
         for (row = 0; row < size; row++) {
             //printf("ROW: %d\n", row);
             for (col = 0; col < size; col++) {
-                printf("%d ", grid[row][col]);
-                //printf("%d%d ", row, col);
+                printf("%c ", display[row][col]);
                 if (col == size - 1) {
                     printf("\n");
                 }
             }
         }
+
         int inputR, inputC;
-        printf("Entrez les coordonees de la case ainsi: Ligne Colone\nex: 1 0\n");
-        scanf_s("%d %d", &inputR, &inputC);
-        printf("Row: %d, Col: %d", inputR, inputC);
+        bool valide = false;
+        while (!valide) {
+            printf("\nEntrez les coordonees de la case ainsi: Ligne Colone\nex: 1 0\n");
+            scanf_s("%d %d", &inputR, &inputC);
+            // Check si la case est valide
+            if ((inputC <= size && inputC > 0) && (inputR <= size && inputR > 0)) {
+                valide = true;
+                printf("\nCoordonees valides\n");
+            }
+            // redemander si elle ne l'est pas
+            else {
+                printf("\nCoordonees invalides, reessayez\n");
+            }
+        }
+        // check si la case à été découverte
+        if (display[inputR][inputC] == '?') {
+            if (grid[inputR][inputC] == 1) {
+                display[inputR][inputC] = 'X';
+                lost = true;
+            }
+        }
         
         //CHECK FOR MINES
         if (grid[inputR][inputC] == 1) {
