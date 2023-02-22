@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{715189d9-d4b6-4211-82d8-236dc08ab30c}</ProjectGuid>
+    <ProjectGuid>{ab9c3f0f-0c5b-41e3-a173-d43fef210107}</ProjectGuid>
     <RootNamespace>minesweeper</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
