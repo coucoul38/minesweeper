@@ -69,17 +69,25 @@ int main() {
         //Displaying array elements
         //printf("\nLen: %d", len);
         printf("Two Dimensional array elements:\n");
-        for (row = 0; row < size; row++) {
+        for (row = -1; row < size; row++) {
             //printf("ROW: %d\n", row);
-            for (col = 0; col < size; col++) {
-                printf("%c ", display[row][col]);
+            for (col = -1; col < size; col++) {
+                if (row == -1) {
+                    printf("%d ", col+1);
+                }
+                else if (col == -1) {
+                    printf("%d ", row+1);
+                }
+                else {
+                    printf("%c ", display[row][col]);
+                }
                 if (col == size - 1) {
                     printf("\n");
                 }
             }
         }
 
-        for (row = 0; row < size; row++) {
+        /*for (row = 0; row < size; row++) {
             //printf("ROW: %d\n", row);
             for (col = 0; col < size; col++) {
                 printf("%d ", grid[row][col]);
@@ -87,7 +95,7 @@ int main() {
                     printf("\n");
                 }
             }
-        }
+        }*/
 
         int inputR, inputC;
         bool valide = false;
