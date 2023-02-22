@@ -114,12 +114,14 @@ int main() {
                 int count = 0;
                 //compter le nombre de mines autour
                 int R, C;
-                for(R = -1; R <1; R++) {
-                    for(C = -1; C <1 ; C++)
+                for(R = -2; R <1; R++) {
+                    for(C = -2; C <1 ; C++)
                     {
-                        printf("Checking coordinates [%d][%d]", inputR+R, inputC+C);
-                        if (grid[inputR+R][inputC+C]==1) {
-                            count++;
+                        if (!(inputR + R < 0 || inputC + C < 0)) {
+                            printf("Checking coordinates [%d][%d]", inputR + R, inputC + C);
+                            if (grid[inputR + R][inputC + C] == 1) {
+                                count++;
+                            }
                         }
                     }
                 }
