@@ -39,7 +39,7 @@ int main() {
     switch (difficulty)
     {
     case 0:
-        toPlace = 10;
+        toPlace = 20;
     default:
         break;
     }
@@ -97,7 +97,6 @@ int main() {
             // Check si la case est valide
             if ((inputC <= size && inputC > 0) && (inputR <= size && inputR > 0)) {
                 valide = true;
-                printf("\nCoordonees valides\n");
             }
             // redemander si elle ne l'est pas
             else {
@@ -105,8 +104,8 @@ int main() {
             }
         }
         // check si la case à été découverte
-        if (display[inputR][inputC] == '?') {
-            if (grid[inputR][inputC] == 1) {
+        if(display[inputR][inputC] == '?') {
+            if(grid[inputR][inputC] == 1) {
                 display[inputR][inputC] = 'X';
                 lost = true;
             }
@@ -115,9 +114,10 @@ int main() {
                 int count = 0;
                 //compter le nombre de mines autour
                 int R, C;
-                for(R = -2; R <1; R++) {
-                    for(C = -2; C <1 ; C++)
+                for(R = -1; R <1; R++) {
+                    for(C = -1; C <1 ; C++)
                     {
+                        printf("Checking coordinates [%d][%d]", inputR+R, inputC+C);
                         if (grid[inputR+R][inputC+C]==1) {
                             count++;
                         }
