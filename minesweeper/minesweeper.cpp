@@ -31,14 +31,15 @@ int countNearby(int row, int col) {
     char nearby = count + '0';
     //printf("\n Changing [%d][%d]\n", row, col);
     display[row][col] = nearby;
+
     //si il n'y a aucune mine autour, découvrir les cases adjacentes
-    int rRelativeToInput, cRelativeToInput;
     if(count == 0){
+        int rRelativeToInput, cRelativeToInput;
         for (rRelativeToInput = -1; rRelativeToInput < 2; rRelativeToInput++) {
             for (cRelativeToInput = -1; cRelativeToInput < 2; cRelativeToInput++) {
                 if (display[row + rRelativeToInput][col + cRelativeToInput] == '?' || display[row + rRelativeToInput][col + cRelativeToInput] == 'F') {
                     countNearby(row + rRelativeToInput, col + cRelativeToInput);
-                    printf("\nCalling countNearby(%d,%d)\n", row + rRelativeToInput, col + cRelativeToInput);
+                    //printf("\nCalling countNearby(%d,%d)\n", row + rRelativeToInput, col + cRelativeToInput);
                 }
             }
         }
