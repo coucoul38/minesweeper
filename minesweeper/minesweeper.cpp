@@ -9,6 +9,7 @@
 const int size = 10;
 int grid[size][size];
 char display[size][size];
+int toPlace;
 
 // compter le nombre de mines adjacentes à une case
 int countNearby(int row, int col) {
@@ -47,6 +48,28 @@ int countNearby(int row, int col) {
     return(count);
 }
 
+
+bool checkWin() {
+    int count, row, col;
+    count = 0;
+    for (row = 0; row < size; row++) {
+        for (col = 0; col < size; col++) {
+            if (display[row][col] == '?' || display[row][col] == 'F') {
+                count++;
+
+            }
+        }
+
+    }
+    if (count == toPlace) {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+}
+
 int main() {
     bool lost = false;
     int difficulty = 0;
@@ -72,13 +95,13 @@ int main() {
     /*printf("\nChoisir la difficulte (entre 0 et 3): ");
     scanf_s("$d", &difficulty);
     printf("Difficulty: %d", difficulty);*/
-    int toPlace;
+
     //change number of mines depending on difficulty
     switch (difficulty)
     {
     case 0:
         toPlace = 20;
-    default:
+    default:()
         break;
     }
 
@@ -179,6 +202,10 @@ int main() {
                 countNearby(inputR-1, inputC-1);
             }
         }
+        if (checkWin()) {
+            printf("Victory!");
+        }
+
         
         //CHECK FOR MINES
         /*if (grid[inputR - 1][inputC - 1] == 1) {
