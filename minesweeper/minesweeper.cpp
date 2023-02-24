@@ -15,32 +15,33 @@ int toPlace;
 int countNearby(int row, int col) {
     int R, C, count;
     count = 0;
-    for (R = -1; R < 2; R++) {
-        for (C = -1; C < 2; C++)
+    for (R = -2; R < 1; R++) {
+        for (C = -2; C < 1; C++)
         {
             if (!(row + R < 0 || col + C < 0)) {
-                //printf("Checking coordinates [%d][%d]", row + R, col + C);
-                if (grid[row + R][col + C] == 1) {
-                    count++;
+                if (row + R < 10 && col + C < 10) {
+                    if (grid[row + R][col + C] == 1 && !(R == -1 && C == -1)) {
+                        count++;
+                        //printf("[%d][%d] TRUE %d %d\n", row + R, col + C, R, C);
+                    }
                 }
             }
         }
     }
-    //printf("\nNearby: %d\n", count);
-    // display le nombre
     //convertir int en string
     char nearby = count + '0';
-    //printf("\n Changing [%d][%d]\n", row, col);
-    display[row][col] = nearby;
+    display[row - 1][col - 1] = nearby;
 
     //si il n'y a aucune mine autour, découvrir les cases adjacentes
-    if(count == 0){
+    if (count == 0) {
         int rRelativeToInput, cRelativeToInput;
-        for (rRelativeToInput = -1; rRelativeToInput < 2; rRelativeToInput++) {
-            for (cRelativeToInput = -1; cRelativeToInput < 2; cRelativeToInput++) {
+        for (rRelativeToInput = -2; rRelativeToInput < 1; rRelativeToInput++) {
+            for (cRelativeToInput = -2; cRelativeToInput < 1; cRelativeToInput++) {
                 if (display[row + rRelativeToInput][col + cRelativeToInput] == '?' || display[row + rRelativeToInput][col + cRelativeToInput] == 'F') {
-                    countNearby(row + rRelativeToInput, col + cRelativeToInput);
-                    //printf("\nCalling countNearby(%d,%d)\n", row + rRelativeToInput, col + cRelativeToInput);
+                    if (!(row + rRelativeToInput < 0) && !(col + cRelativeToInput < 0) && (row + rRelativeToInput < size) && (col + cRelativeToInput < size)) {
+                        //printf("\nCalling countNearby(%d,%d)\n", row + rRelativeToInput + 1, col + cRelativeToInput + 1);
+                        countNearby(row + rRelativeToInput + 1, col + cRelativeToInput + 1);
+                    }
                 }
             }
         }
@@ -75,8 +76,8 @@ int main() {
     int difficulty = 0;
 
     /* initialisation de la grid */
-    printf("\nSize: %dx%d",size, size);
-    
+    printf("\nSize: %dx%d", size, size);
+
 
     int row, col;
     for (row = 0; row < size; row++) {
@@ -87,10 +88,10 @@ int main() {
     // grid à afficher
     for (row = 0; row < size; row++) {
         for (col = 0; col < size; col++) {
-            display[row][col] = '?' ;
+            display[row][col] = '?';
         }
     }
-    
+
     //populate with mines
     /*printf("\nChoisir la difficulte (entre 0 et 3): ");
     scanf_s("$d", &difficulty);
@@ -100,8 +101,8 @@ int main() {
     switch (difficulty)
     {
     case 0:
-        toPlace = 20;
-    default:()
+        toPlace = 5;
+    default:
         break;
     }
 
@@ -114,36 +115,39 @@ int main() {
         int rr = rand() % size;
         int rc = rand() % size;
         //no duplicates
-        if (grid[rr][rc] == 0) 
+        if (grid[rr][rc] == 0)
         {
             grid[rr][rc] = 1;
             //printf("%d, %d\n", rr, rc);
-        } else {
+        }
+        else {
             placed = placed - 1;
         }
     }
 
     while (!lost)
-    {   
+    {
         // display
         for (row = -1; row < size; row++) {
             //printf("ROW: %d\n", row);
             for (col = -1; col < size; col++) {
                 if (row == -1) {
-                    printf("\033[22;34m%d\033[0m ", col+1);
-                } else if (col == -1) {
-                    printf("\033[22;34m%d\033[0m ", row+1);
-                } else {
+                    printf("\033[22;34m%d\033[0m ", col + 1);
+                }
+                else if (col == -1) {
+                    printf("\033[22;34m%d\033[0m ", row + 1);
+                }
+                else {
                     if (display[row][col] == 'F') {
                         printf("\033[22;31m%c\033[0m ", display[row][col]);
                     }
-                    else if(display[row][col] == '?'){
+                    else if (display[row][col] == '?') {
                         printf("%c ", display[row][col]);
                     }
                     else {
                         printf("\033[22;33m%c\033[0m ", display[row][col]);
                     }
-                    
+
                 }
 
                 if (col == size - 1) {
@@ -160,9 +164,11 @@ int main() {
                 }
                 else if (col == -1) {
                     printf("%d ", row + 1);
-                } else if(grid[row][col]==1){
+                }
+                else if (grid[row][col] == 1) {
                     printf("\033[22;31m%i\033[0m ", grid[row][col]);
-                } else {
+                }
+                else {
                     printf("%i ", grid[row][col]);
                 }
 
@@ -173,7 +179,7 @@ int main() {
         }
 
         int inputR, inputC;
-        char option='d';
+        char option = 'd';
         bool valide = false;
         while (!valide) {
             // récupérer les coordonnées
@@ -183,30 +189,33 @@ int main() {
             if ((inputC <= size && inputC > 0) && (inputR <= size && inputR > 0)) {
                 valide = true;
                 if (option == 'f') {
-                    display[inputR-1][inputC-1] = 'F';
+                    display[inputR - 1][inputC - 1] = 'F';
                 }
                 printf("\noption: %c\n", option);
-            } else { // redemander si elle ne l'est pas
+            }
+            else { // redemander si elle ne l'est pas
                 printf("\nCoordonees invalides, reessayez\n");
             }
         }
         // check si la case à été découverte
-        if(display[inputR-1][inputC-1] == '?') {
-            if(grid[inputR-1][inputC-1] == 1) {
+        if (display[inputR - 1][inputC - 1] == '?') {
+            if (grid[inputR - 1][inputC - 1] == 1) {
                 if (option != 'f') {
                     display[inputR - 1][inputC - 1] = 'X';
                     lost = true;
                     printf("\nPERDU!\n");
                 }
-            } else {
-                countNearby(inputR-1, inputC-1);
+            }
+            else {
+                countNearby(inputR - 1, inputC - 1);
             }
         }
         if (checkWin()) {
-            printf("Victory!");
+            printf("\n Bravo, vous avez gagné! \n");
+            return(0);
         }
 
-        
+
         //CHECK FOR MINES
         /*if (grid[inputR - 1][inputC - 1] == 1) {
             lost = true;
