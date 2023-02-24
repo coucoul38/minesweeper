@@ -101,7 +101,7 @@ int main() {
     switch (difficulty)
     {
     case 0:
-        toPlace = 5;
+        toPlace = 10;
     default:
         break;
     }
@@ -141,7 +141,7 @@ int main() {
                     if (display[row][col] == 'F') {
                         printf("\033[22;31m%c\033[0m ", display[row][col]);
                     }
-                    else if (display[row][col] == '?') {
+                    else if (display[row][col] == '?'|| display[row][col] == '0') {
                         printf("%c ", display[row][col]);
                     }
                     else {
