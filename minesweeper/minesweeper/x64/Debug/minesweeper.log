@@ -1,0 +1,7 @@
+﻿  minesweeper.cpp
+C:\Users\ncoulon\Documents\GitHub\minesweeper-master\minesweeper\minesweeper.cpp(89,15): warning C4244: 'argument' : conversion de 'time_t' en 'unsigned int', perte possible de données
+C:\Users\ncoulon\Documents\GitHub\minesweeper-master\minesweeper\minesweeper.cpp(161,21): warning C4473: 'scanf_s' : nombre insuffisant d'arguments passés pour la chaîne de format
+C:\Users\ncoulon\Documents\GitHub\minesweeper-master\minesweeper\minesweeper.cpp(161,21): message : les espaces réservés et leurs paramètres attendent des arguments 4 variadiques, mais des arguments 3 ont été fournis
+C:\Users\ncoulon\Documents\GitHub\minesweeper-master\minesweeper\minesweeper.cpp(161,21): message : l'argument variadique manquant 4 est demandé par la chaîne de format '%c'
+C:\Users\ncoulon\Documents\GitHub\minesweeper-master\minesweeper\minesweeper.cpp(161,21): message : cet argument est utilisé comme taille de mémoire tampon
+  minesweeper.vcxproj -> C:\Users\ncoulon\Documents\GitHub\minesweeper-master\x64\Debug\minesweeper.exe
