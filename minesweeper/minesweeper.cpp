@@ -6,20 +6,23 @@
 #include <stdio.h>
 #include <time.h>
 
-const int size = 10;
+
+int *pointeurSize = NULL;
+
+/*const int size = 10;
 int grid[size][size];
-char display[size][size];
+char display[size][size];*/
 int toPlace;
 
 // compter le nombre de mines adjacentes à une case
-int countNearby(int row, int col) {
+int countNearby(int row, int col, int size, int** grid, char** display) {
     int R, C, count;
     count = 0;
     for (R = -2; R < 1; R++) {
         for (C = -2; C < 1; C++)
         {
             if (!(row + R < 0 || col + C < 0)) {
-                if (row + R < 10 && col + C < 10) {
+                if (row + R < size && col + C < size) {
                     if (grid[row + R][col + C] == 1 && !(R == -1 && C == -1)) {
                         count++;
                         //printf("[%d][%d] TRUE %d %d\n", row + R, col + C, R, C);
@@ -40,7 +43,7 @@ int countNearby(int row, int col) {
                 if (display[row + rRelativeToInput][col + cRelativeToInput] == '?' || display[row + rRelativeToInput][col + cRelativeToInput] == 'F') {
                     if (!(row + rRelativeToInput < 0) && !(col + cRelativeToInput < 0) && (row + rRelativeToInput < size) && (col + cRelativeToInput < size)) {
                         //printf("\nCalling countNearby(%d,%d)\n", row + rRelativeToInput + 1, col + cRelativeToInput + 1);
-                        countNearby(row + rRelativeToInput + 1, col + cRelativeToInput + 1);
+                        countNearby(row + rRelativeToInput + 1, col + cRelativeToInput + 1, size, grid, display);
                     }
                 }
             }
@@ -50,7 +53,7 @@ int countNearby(int row, int col) {
 }
 
 
-bool checkWin() {
+bool checkWin(int size, char** display) {
     int count, row, col;
     count = 0;
     for (row = 0; row < size; row++) {
@@ -71,11 +74,70 @@ bool checkWin() {
 
 }
 
+void show(int** adress, int size)
+{
+    int row, col;
+    for (row = -1; row < size; row++) {
+        //printf("ROW: %d\n", row);
+        for (col = -1; col < size; col++) {
+            if (row == -1) {
+                printf("%d ", col + 1);
+            }
+            else if (col == -1) {
+                printf("%d ", row + 1);
+            }
+            else if (adress[row][col] == 1) {
+                printf("\033[22;31m%i\033[0m ", adress[row][col]);
+            }
+            else {
+                printf("%i ", adress[row][col]);
+            }
+            if (col == size - 1) {
+                printf("\n");
+            }
+        }
+    }
+}
+
 int main() {
     bool lost = false;
     int difficulty = 0;
+    int size=10;
+    
+    printf("Choisir une taille pour la grille de jeu");
+    scanf_s("%d", &size);
 
     /* initialisation de la grid */
+    int** grid = (int **)malloc(size * sizeof(int*)); // initialise les rows qui vont contennir les colonnes
+
+    for (int num = 0; num < size; num++) {
+        int* col = (int *)malloc(size * sizeof(int)); //initialise les array des colonnes
+        grid[num] = col; //mettre la colone dans la row
+    }
+    // valeurs de base
+    for (int row = 0; row < size; row++) {
+        for (int col = 0; col < size; col++) {
+            grid[row][col] = 0;
+        }
+    }
+
+    // initialisation de la grille display
+    char** display = (char **)malloc(size * sizeof(char*)); // initialise les rows qui vont contennir les colonnes
+
+    for (int num = 0; num < size; num++) {
+        char* col = (char*)malloc(size * sizeof(char)); //initialise les array des colonnes
+        display[num] = col; //mettre la colone dans la row
+    }
+    // valeurs de base
+    for (int row = 0; row < size; row++) {
+        for (int col = 0; col < size; col++) {
+            if (display[row][col]) {
+                display[row][col] = '?';
+            }
+        }
+    }
+
+
     printf("\nSize: %dx%d", size, size);
 
 
@@ -128,58 +190,10 @@ int main() {
     while (!lost)
     {
         // display
-        for (row = -1; row < size; row++) {
-            //printf("ROW: %d\n", row);
-            for (col = -1; col < size; col++) {
-                if (row == -1) {
-                    printf("\033[22;34m%d\033[0m ", col + 1);
-                }
-                else if (col == -1) {
-                    printf("\033[22;34m%d\033[0m ", row + 1);
-                }
-                else {
-                    if (display[row][col] == 'F') {
-                        printf("\033[22;31m%c\033[0m ", display[row][col]);
-                    }
-                    else if (display[row][col] == '?'|| display[row][col] == '0') {
-                        printf("%c ", display[row][col]);
-                    }
-                    else {
-                        printf("\033[22;33m%c\033[0m ", display[row][col]);
-                    }
-
-                }
-
-                if (col == size - 1) {
-                    printf("\n");
-                }
-            }
-        }
-        printf("\n");
-        for (row = -1; row < size; row++) {
-            //printf("ROW: %d\n", row);
-            for (col = -1; col < size; col++) {
-                if (row == -1) {
-                    printf("%d ", col + 1);
-                }
-                else if (col == -1) {
-                    printf("%d ", row + 1);
-                }
-                else if (grid[row][col] == 1) {
-                    printf("\033[22;31m%i\033[0m ", grid[row][col]);
-                }
-                else {
-                    printf("%i ", grid[row][col]);
-                }
-
-                if (col == size - 1) {
-                    printf("\n");
-                }
-            }
-        }
+        show(grid, size);
 
         int inputR, inputC;
-        char option = 'd';
+        char option;
         bool valide = false;
         while (!valide) {
             // récupérer les coordonnées
@@ -207,10 +221,10 @@ int main() {
                 }
             }
             else {
-                countNearby(inputR - 1, inputC - 1);
+                countNearby(inputR - 1, inputC - 1, size, grid, display);
             }
         }
-        if (checkWin()) {
+        if (checkWin(size, display)) {
             printf("\n Bravo, vous avez gagné! \n");
             return(0);
         }
@@ -222,10 +236,26 @@ int main() {
             printf("Perdu !");
         }*/
     }
+    free(display);
+    free(grid);
     return 0;
 }
 
+/* int main()
+{
+    //création de 'pi' sur le tas
+    int ** pi = (int **) malloc(sizeof(int*) * 10);
+    for(int i = 0; i < 10; ++i)
+    {
+        pi[i] = (int*) malloc(sizeof(int) * 10);
+    }
 
+    //destruction manuelle de 'pi'
+    free(pi);
+
+    return 0;
+} 
+*/
 
 // Exécuter le programme : Ctrl+F5 ou menu Déboguer > Exécuter sans débogage
 // Déboguer le programme : F5 ou menu Déboguer > Démarrer le débogage
