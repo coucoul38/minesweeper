@@ -14,7 +14,7 @@
 #define MAGENTA   "\x1B[35m"
 #define CYAN   "\x1B[36m"
 #define BMAGENTA   "\x1B[95m"
-#define CUM "\x1B[93m"
+#define COLOR0 "\x1B[93m"
 #define REDBG "\x1B[41m"
 #define RESET "\x1B[0m"
 
@@ -117,13 +117,32 @@ void showgrid(int** adress, int size)
 void showdisplay(char** display, int size) {
     // display
     for (int row = -1; row < size; row++) {
-        //printf("ROW: %d\n", row);
         for (int col = -1; col < size; col++) {
             if (row == -1) {
                 printf(BMAGENTA "%d " RESET, col + 1);
             }
             else if (col == -1) {
-                printf(BMAGENTA "%d " RESET, row + 1);
+                if (size > 99) {
+                    if (row==99) {
+                        printf(BMAGENTA "%d " RESET, row + 1);
+                    }
+                    else if (row > 8) {
+                        printf(BMAGENTA "%d  " RESET, row + 1);
+                    }
+                    else {
+                        printf(BMAGENTA "%d   " RESET, row + 1);
+                    }
+                }
+                else if(size > 9){
+                    if (row == 9) {
+                        printf(BMAGENTA "%d " RESET, row + 1);
+                    }
+                    else {
+                        printf(BMAGENTA "%d  " RESET, row + 1);
+                    }
+                } else {
+                    printf(BMAGENTA "%d " RESET, row + 1);
+                }
             }
             else {
                 if (display[row][col] == 'F') {
@@ -136,7 +155,7 @@ void showdisplay(char** display, int size) {
                      switch (display[row][col])
                      {
                      case '0':
-                         printf(CUM "%c " RESET, display[row][col]);
+                         printf(COLOR0 "%c " RESET, display[row][col]);
                          break;
                      case '1':
                          printf(BLUE "%c " RESET, display[row][col]);
@@ -165,6 +184,32 @@ void showdisplay(char** display, int size) {
             }
             if (col == size - 1) {
                 printf("\n");
+            }
+        }
+    }
+}
+
+void reveal(char** display, int** grid, int size) { //cherche un endroit avec 0 mines autour et le reveal (marche pas)
+
+    int count = 0;
+    for (int row = -1; row < size; row++) {
+        for (int col = -1; col < size; col++) {
+            for (int R = -2; R < 1; R++) {
+                for (int C = -2; C < 1; C++)
+                {
+                    if (!(row + R < 0 || col + C < 0)) {
+                        if (row + R < size && col + C < size) {
+                            if (grid[row + R][col + C] == 0 && !(R == -1 && C == -1)) {
+                                count++;
+                                //printf("[%d][%d] TRUE %d %d\n", row + R, col + C, R, C);
+                            }
+                        }
+                    }
+                }
+            }
+            if (count > 1) {
+                printf("found at: [%d][%d]", row, col);
+                countNearby(row + 1, col + 1, size, grid, display);
             }
         }
     }
@@ -207,7 +252,6 @@ int main() {
             }
         }
     }
-
 
     printf("Size: %dx%d", size, size);
 
@@ -274,7 +318,9 @@ int main() {
     {
         // display
         showgrid(grid, size);
+        system("cls"); //clear console
         showdisplay(display, size);
+        //reveal(display, grid, size);
 
         int inputR, inputC;
         char option;
