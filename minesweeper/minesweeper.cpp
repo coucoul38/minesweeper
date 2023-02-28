@@ -7,6 +7,17 @@
 #include <time.h>
 
 
+#define RED   "\x1B[31m"
+#define GREEN   "\x1B[32m"
+#define YELLOW   "\x1B[33m"
+#define BLUE   "\x1B[34m"
+#define MAGENTA   "\x1B[35m"
+#define CYAN   "\x1B[36m"
+#define BMAGENTA   "\x1B[95m"
+#define CUM "\x1B[93m"
+#define REDBG "\x1B[41m"
+#define RESET "\x1B[0m"
+
 int *pointeurSize = NULL;
 
 /*const int size = 10;
@@ -33,19 +44,20 @@ int countNearby(int row, int col, int size, int** grid, char** display) {
     }
     //convertir int en string
     char nearby = count + '0';
-    display[row - 1][col - 1] = nearby;
+    display[row-1][col-1] = nearby;
 
     //si il n'y a aucune mine autour, découvrir les cases adjacentes
     if (count == 0) {
         int rRelativeToInput, cRelativeToInput;
         for (rRelativeToInput = -2; rRelativeToInput < 1; rRelativeToInput++) {
             for (cRelativeToInput = -2; cRelativeToInput < 1; cRelativeToInput++) {
-                if (display[row + rRelativeToInput][col + cRelativeToInput] == '?' || display[row + rRelativeToInput][col + cRelativeToInput] == 'F') {
-                    if (!(row + rRelativeToInput < 0) && !(col + cRelativeToInput < 0) && (row + rRelativeToInput < size) && (col + cRelativeToInput < size)) {
+                if (!(row + rRelativeToInput < 0) && !(col + cRelativeToInput < 0) && (row + rRelativeToInput < size) && (col + cRelativeToInput < size)) {
+                    if (display[row + rRelativeToInput][col + cRelativeToInput] == '?' || display[row + rRelativeToInput][col + cRelativeToInput] == 'F') {
                         //printf("\nCalling countNearby(%d,%d)\n", row + rRelativeToInput + 1, col + cRelativeToInput + 1);
                         countNearby(row + rRelativeToInput + 1, col + cRelativeToInput + 1, size, grid, display);
                     }
                 }
+                
             }
         }
     }
@@ -74,7 +86,7 @@ bool checkWin(int size, char** display) {
 
 }
 
-void show(int** adress, int size)
+void showgrid(int** adress, int size)
 {
     int row, col;
     for (row = -1; row < size; row++) {
@@ -89,8 +101,67 @@ void show(int** adress, int size)
             else if (adress[row][col] == 1) {
                 printf("\033[22;31m%i\033[0m ", adress[row][col]);
             }
-            else {
+            else if (adress[row][col] == 0) {
                 printf("%i ", adress[row][col]);
+            }
+            
+            if (col == size - 1) {
+                printf("\n");
+            }
+        }
+
+        
+    }
+}
+
+void showdisplay(char** display, int size) {
+    // display
+    for (int row = -1; row < size; row++) {
+        //printf("ROW: %d\n", row);
+        for (int col = -1; col < size; col++) {
+            if (row == -1) {
+                printf(BMAGENTA "%d " RESET, col + 1);
+            }
+            else if (col == -1) {
+                printf(BMAGENTA "%d " RESET, row + 1);
+            }
+            else {
+                if (display[row][col] == 'F') {
+                    printf(REDBG "%c" RESET " ", display[row][col]);
+                }
+                else if (display[row][col] == '?' /* || display[row][col] == '0'*/) {
+                    printf("%c ", display[row][col]);
+                }
+                else {
+                     switch (display[row][col])
+                     {
+                     case '0':
+                         printf(CUM "%c " RESET, display[row][col]);
+                         break;
+                     case '1':
+                         printf(BLUE "%c " RESET, display[row][col]);
+                         break;
+                     case '2':
+                         printf(GREEN "%c " RESET, display[row][col]);
+                         break;
+                     case '3':
+                         printf(RED "%c " RESET, display[row][col]);
+                         break;
+                     case '4':
+                         printf(MAGENTA "%c " RESET, display[row][col]);
+                         break;
+                     case '5':
+                         printf(YELLOW "%c " RESET, display[row][col]);
+                         break;
+                     case '6':
+                         printf(CYAN "%c " RESET, display[row][col]);
+                         break;
+                     default:
+                         printf("%c ", display[row][col]);
+                         break;
+                     }
+                }
+            
             }
             if (col == size - 1) {
                 printf("\n");
@@ -104,7 +175,7 @@ int main() {
     int difficulty = 0;
     int size=10;
     
-    printf("Choisir une taille pour la grille de jeu");
+    printf("Choisir une taille pour la grille de jeu: ");
     scanf_s("%d", &size);
 
     /* initialisation de la grid */
@@ -138,7 +209,7 @@ int main() {
     }
 
 
-    printf("\nSize: %dx%d", size, size);
+    printf("Size: %dx%d", size, size);
 
 
     int row, col;
@@ -155,16 +226,28 @@ int main() {
     }
 
     //populate with mines
-    /*printf("\nChoisir la difficulte (entre 0 et 3): ");
-    scanf_s("$d", &difficulty);
-    printf("Difficulty: %d", difficulty);*/
+    printf("\nChoisir la difficulte (entre 0 et 3): ");
+    scanf_s("%d", &difficulty);
 
     //change number of mines depending on difficulty
     switch (difficulty)
     {
-    case 0:
-        toPlace = 10;
+    case 1:
+        printf("\nDifficulty: Easy\n");
+        printf("\nSize: %d", size);
+        toPlace = (size*size)/6;
+        break;
+    case 2:
+        printf("\nDifficulty: Medium\n");
+        toPlace = (size * size) / 5;
+        break;
+    case 3:
+        printf("\nDifficulty: Hard\n");
+        toPlace = (size * size) / 4;
+        break;
     default:
+        printf("\nChoisir la difficulte (entre 0 et 3): ");
+        scanf_s("%d", &difficulty);
         break;
     }
 
@@ -190,7 +273,8 @@ int main() {
     while (!lost)
     {
         // display
-        show(grid, size);
+        showgrid(grid, size);
+        showdisplay(display, size);
 
         int inputR, inputC;
         char option;
@@ -203,7 +287,13 @@ int main() {
             if ((inputC <= size && inputC > 0) && (inputR <= size && inputR > 0)) {
                 valide = true;
                 if (option == 'f') {
-                    display[inputR - 1][inputC - 1] = 'F';
+                    printf("test");
+                    if (display[inputR - 1][inputC - 1] == 'F') {
+                        printf("F");
+                        display[inputR - 1][inputC - 1] = '?';
+                    } else {
+                        display[inputR - 1][inputC - 1] = 'F';
+                    }
                 }
                 printf("\noption: %c\n", option);
             }
@@ -220,8 +310,8 @@ int main() {
                     printf("\nPERDU!\n");
                 }
             }
-            else {
-                countNearby(inputR - 1, inputC - 1, size, grid, display);
+            else if (option != 'f'){
+                countNearby(inputR, inputC, size, grid, display);
             }
         }
         if (checkWin(size, display)) {
