@@ -16,6 +16,8 @@
 #define BMAGENTA   "\x1B[95m"
 #define COLOR0 "\x1B[93m"
 #define REDBG "\x1B[41m"
+#define WHITEBG "\x1B[47m"
+#define GRAYBG "\x1B[100m"
 #define RESET "\x1B[0m"
 
 int *pointeurSize = NULL;
@@ -72,7 +74,6 @@ bool checkWin(int size, char** display) {
         for (col = 0; col < size; col++) {
             if (display[row][col] == '?' || display[row][col] == 'F') {
                 count++;
-
             }
         }
 
@@ -119,22 +120,34 @@ void showdisplay(char** display, int size) {
     for (int row = -1; row < size; row++) {
         for (int col = -1; col < size; col++) {
             if (row == -1) {
-                printf(BMAGENTA "%d " RESET, col + 1);
-            }
-            else if (col == -1) {
-                if (size > 99) {
-                    if (row==99) {
-                        printf(BMAGENTA "%d " RESET, row + 1);
+                //ALIGNEMENT DES ROWS
+                if (size > 98) {
+                    if (col > 98) {
+                        printf(BMAGENTA "%d " RESET, col + 1);
                     }
-                    else if (row > 8) {
-                        printf(BMAGENTA "%d  " RESET, row + 1);
+                    else if (col > 8) {
+                        printf(BMAGENTA "%d  " RESET, col + 1);
                     }
                     else {
-                        printf(BMAGENTA "%d   " RESET, row + 1);
+                        printf(BMAGENTA "%d   " RESET, col + 1);
                     }
                 }
-                else if(size > 9){
-                    if (row == 9) {
+                else if (size > 8) {
+                    if (col > 8) {
+                        printf(BMAGENTA "%d " RESET, col + 1);
+                    }
+                    else {
+                        printf(BMAGENTA "%d  " RESET, col + 1);
+                    }
+                }
+                else {
+                    printf(BMAGENTA "%d " RESET, col + 1);
+                }
+            }
+            else if (col == -1) {
+                //ALIGNEMENT DES ROWS
+                if(size > 8){
+                    if (row > 8) {
                         printf(BMAGENTA "%d " RESET, row + 1);
                     }
                     else {
@@ -146,7 +159,7 @@ void showdisplay(char** display, int size) {
             }
             else {
                 if (display[row][col] == 'F') {
-                    printf(REDBG "%c" RESET " ", display[row][col]);
+                    printf(REDBG "F" RESET " ", display[row][col]);
                 }
                 else if (display[row][col] == '?' /* || display[row][col] == '0'*/) {
                     printf("%c ", display[row][col]);
@@ -155,32 +168,44 @@ void showdisplay(char** display, int size) {
                      switch (display[row][col])
                      {
                      case '0':
-                         printf(COLOR0 "%c " RESET, display[row][col]);
+                         printf(COLOR0 "0 " RESET);
                          break;
                      case '1':
-                         printf(BLUE "%c " RESET, display[row][col]);
+                         printf(BLUE "1 " RESET);
                          break;
                      case '2':
-                         printf(GREEN "%c " RESET, display[row][col]);
+                         printf(GREEN "2 " RESET);
                          break;
                      case '3':
-                         printf(RED "%c " RESET, display[row][col]);
+                         printf(RED "3 " RESET);
                          break;
                      case '4':
-                         printf(MAGENTA "%c " RESET, display[row][col]);
+                         printf(MAGENTA "4 " RESET);
                          break;
                      case '5':
-                         printf(YELLOW "%c " RESET, display[row][col]);
+                         printf(YELLOW "5 " RESET);
                          break;
                      case '6':
-                         printf(CYAN "%c " RESET, display[row][col]);
+                         printf(CYAN "6 " RESET);
+                         break;
+                     case 'X':
+                         printf(RED "X " RESET);
+                         break;
+                     case 'x':
+                         printf(RED WHITEBG "X" RESET " ");
                          break;
                      default:
                          printf("%c ", display[row][col]);
                          break;
                      }
                 }
-            
+                //ALIGNEMENT DES ROWS
+                if (size > 98) {
+                    //printf("  ");
+                }
+                else if (size > 8) {
+                    printf(" ");  
+                }            
             }
             if (col == size - 1) {
                 printf("\n");
@@ -190,38 +215,41 @@ void showdisplay(char** display, int size) {
 }
 
 void reveal(char** display, int** grid, int size) { //cherche un endroit avec 0 mines autour et le reveal (marche pas)
+    int minRow = 0;
+    int minCol = 0;
+    int count;
+    int minCount = 999;
 
-    int count = 0;
-    for (int row = -1; row < size; row++) {
-        for (int col = -1; col < size; col++) {
-            for (int R = -2; R < 1; R++) {
-                for (int C = -2; C < 1; C++)
-                {
-                    if (!(row + R < 0 || col + C < 0)) {
-                        if (row + R < size && col + C < size) {
-                            if (grid[row + R][col + C] == 0 && !(R == -1 && C == -1)) {
-                                count++;
-                                //printf("[%d][%d] TRUE %d %d\n", row + R, col + C, R, C);
-                            }
-                        }
-                    }
-                }
-            }
-            if (count > 1) {
-                printf("found at: [%d][%d]", row, col);
-                countNearby(row + 1, col + 1, size, grid, display);
+    for (int row = 1; row < size+1; row++) {
+        for (int col = 1; col < size+1; col++) {
+            //printf("Counting on [%d][%d]\n", row, col);
+            count=countNearby(row, col, size, grid, display); //this will reveal the entire grid, we need to reset it after
+            if (count < minCount && grid[row-1][col-1]!=1) {
+                minCount = count;
+                minRow = row;
+                minCol = col;
             }
         }
     }
+    for (int row = 0; row < size; row++) { //reset grid
+        for (int col = 0; col < size; col++) {
+            display[row][col] = '?';
+        }
+    }
+    //printf("Revealing [%d][%d]\n", minRow, minCol);
+    countNearby(minRow, minCol, size, grid, display);
 }
 
 int main() {
     bool lost = false;
     int difficulty = 0;
-    int size=10;
+    int size=0;
     
-    printf("Choisir une taille pour la grille de jeu: ");
-    scanf_s("%d", &size);
+    while (!(size>=3 && size <= 78)) {
+        printf("Choisir une taille pour la grille de jeu (entre 3 et 78): ");
+        scanf_s("%d", &size);
+    }
+    
 
     /* initialisation de la grid */
     int** grid = (int **)malloc(size * sizeof(int*)); // initialise les rows qui vont contennir les colonnes
@@ -270,7 +298,7 @@ int main() {
     }
 
     //populate with mines
-    printf("\nChoisir la difficulte (entre 0 et 3): ");
+    printf("\nChoisir la difficulte (entre 1 et 3): ");
     scanf_s("%d", &difficulty);
 
     //change number of mines depending on difficulty
@@ -289,6 +317,10 @@ int main() {
         printf("\nDifficulty: Hard\n");
         toPlace = (size * size) / 4;
         break;
+    case 999:
+        printf("Difficulty: Git Gud\n");
+        toPlace = (size * size) - 1;
+        break;
     default:
         printf("\nChoisir la difficulte (entre 0 et 3): ");
         scanf_s("%d", &difficulty);
@@ -298,7 +330,6 @@ int main() {
     // RNG
     srand(time(NULL));
     int placed;
-    printf(" Mines: \033[22;31m%d\033[0m\n", toPlace);
     // Randomly place mines
     for (placed = 0; placed < toPlace; placed++) {
         int rr = rand() % size;
@@ -314,13 +345,18 @@ int main() {
         }
     }
 
+    // reveal a starting area to make it easier
+    if (toPlace>3) {
+        reveal(display, grid, size);
+    }
     while (!lost)
     {
         // display
-        showgrid(grid, size);
         system("cls"); //clear console
+        printf(GRAYBG "Mines: " RED "%d" RESET, toPlace);
+        printf(GRAYBG " -- Difficulte: " RED "%i\n" RESET, difficulty);
+        //showgrid(grid, size);
         showdisplay(display, size);
-        //reveal(display, grid, size);
 
         int inputR, inputC;
         char option;
@@ -351,7 +387,14 @@ int main() {
         if (display[inputR - 1][inputC - 1] == '?') {
             if (grid[inputR - 1][inputC - 1] == 1) {
                 if (option != 'f') {
-                    display[inputR - 1][inputC - 1] = 'X';
+                    for (row = 0; row < size; row++) {
+                        for (col = 0; col < size; col++) {
+                            if (grid[row][col] == 1) {
+                                display[row][col] = 'X';
+                            }
+                        }
+                    }
+                    display[inputR-1][inputC-1] = 'x';
                     lost = true;
                     printf("\nPERDU!\n");
                 }
@@ -372,6 +415,7 @@ int main() {
             printf("Perdu !");
         }*/
     }
+    showdisplay(display, size);
     free(display);
     free(grid);
     return 0;
