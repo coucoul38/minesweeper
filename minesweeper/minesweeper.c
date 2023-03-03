@@ -129,19 +129,8 @@ void showdisplay(char** display, int size, int timer) {
         for (int col = -1; col < size; col++) {
             if (row == -1) {
                 //ALIGNEMENT DES ROWS
-                if (size > 98) {
-                    if (col > 98) {
-                        printf(BMAGENTA "%d " RESET, col + 1);
-                    }
-                    else if (col > 8) {
-                        printf(BMAGENTA "%d  " RESET, col + 1);
-                    }
-                    else {
-                        printf(BMAGENTA "%d   " RESET, col + 1);
-                    }
-                }
-                else if (size > 8) {
-                    if (col > 8) {
+                if (size > 9) {
+                    if (col > 9) {
                         printf(BMAGENTA "%d " RESET, col + 1);
                     }
                     else {
@@ -154,7 +143,7 @@ void showdisplay(char** display, int size, int timer) {
             }
             else if (col == -1) {
                 //ALIGNEMENT DES ROWS
-                if(size > 8){
+                if(size > 9){
                     if (row > 8) {
                         printf(BMAGENTA "%d " RESET, row + 1);
                     }
@@ -208,11 +197,8 @@ void showdisplay(char** display, int size, int timer) {
                      }
                 }
                 //ALIGNEMENT DES ROWS
-                if (size > 98) {
-                    //printf("  ");
-                }
-                else if (size > 8) {
-                    printf(" ");  
+                if (size > 9) {
+                    printf(" ");
                 }            
             }
             if (col == size - 1) {
