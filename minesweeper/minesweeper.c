@@ -30,6 +30,7 @@ int *pointeurSize = NULL;
 int grid[size][size];
 char display[size][size];*/
 int toPlace;
+int difficulty = 0;
 
 // compter le nombre de mines adjacentes à une case
 int countNearby(int row, int col, int size, int** grid, char** display) {
@@ -119,8 +120,11 @@ void showgrid(int** adress, int size)
     }
 }
 
-void showdisplay(char** display, int size) {
+void showdisplay(char** display, int size, int timer) {
     // display
+    printf(GRAYBG "Mines: " RED "%d" RESET, toPlace);
+    printf(GRAYBG " -- Difficulte: " RED "%i" RESET, difficulty);
+    printf(GRAYBG " -- Time: " RED "%d\n" RESET, timer);
     for (int row = -1; row < size; row++) {
         for (int col = -1; col < size; col++) {
             if (row == -1) {
@@ -163,7 +167,7 @@ void showdisplay(char** display, int size) {
             }
             else {
                 if (display[row][col] == 'F') {
-                    printf(REDBG "F" RESET " ", display[row][col]);
+                    printf(REDBG "F" RESET " ");
                 }
                 else if (display[row][col] == '?' /* || display[row][col] == '0'*/) {
                     printf("%c ", display[row][col]);
@@ -244,9 +248,9 @@ void reveal(char** display, int** grid, int size) { //cherche un endroit avec 0 
     countNearby(minRow, minCol, size, grid, display);
 }
 
+
 int main() {
     bool lost = false;
-    int difficulty = 0;
     int size=0;
     
     while (!(size>=3 && size <= 78)) {
@@ -361,14 +365,20 @@ int main() {
     if (toPlace>3 && difficulty != 999) {
         reveal(display, grid, size);
     }
+
+    //timer setup
+    time_t startTime, currentTime;
+    startTime = time(NULL);
+    int timer;
+
     while (!lost)
     {
+        currentTime = time(NULL);
+        timer = difftime(currentTime, startTime);
         // display
         system("cls"); //clear console
-        printf(GRAYBG "Mines: " RED "%d" RESET, toPlace);
-        printf(GRAYBG " -- Difficulte: " RED "%i\n" RESET, difficulty);
         //showgrid(grid, size);
-        showdisplay(display, size);
+        showdisplay(display, size, timer);
 
         int inputR, inputC;
         char c1, c2;
@@ -429,7 +439,11 @@ int main() {
             }
         }
         if (checkWin(size, display)) {
-            printf("\n Bravo, vous avez gagné! \n");
+            system("cls"); //clear console
+            printf("\nBravo, vous avez gagne! \n");
+            currentTime = time(NULL);
+            timer = difftime(currentTime, startTime);
+            showdisplay(display, size, timer);
             return(0);
         }
 
@@ -440,7 +454,10 @@ int main() {
             printf("Perdu !");
         }*/
     }
-    showdisplay(display, size);
+    system("cls"); //clear console
+    currentTime = time(NULL);
+    timer = difftime(currentTime, startTime);
+    showdisplay(display, size, timer);
     free(display);
     free(grid);
     return 0;
